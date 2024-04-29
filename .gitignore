@@ -1,52 +1,28 @@
-# Prerequisites
-*.d
-
-# Object files
+*.rar
 *.o
-*.ko
-*.obj
-*.elf
-
-# Linker output
-*.ilk
+*.d
+*.crf
+*.htm
+*.dep
 *.map
-*.exp
+*.bak
+*.lnp
+*.lst
+*.ini
+*.iex
+*.sct
+*.scvd
+*.dbg*
+*.uvguix.*
+*Log.*
 
-# Precompiled Headers
-*.gch
-*.pch
+#忽略.gitignore根目录下的文件夹，根据自己的需要修改
+RTE/
+Templates/
+Examples/
+OBJ/
 
-# Libraries
-*.lib
-*.a
-*.la
-*.lo
-
-# Shared objects (inc. Windows DLLs)
-*.dll
-*.so
-*.so.*
-*.dylib
-
-# Executables
-*.exe
-*.out
-*.app
-*.i*86
-*.x86_64
-*.hex
-
-# Debug files
-*.dSYM/
-*.su
-*.idb
-*.pdb
-
-# Kernel Module Compile Results
-*.mod*
-*.cmd
-.tmp_versions/
-modules.order
-Module.symvers
-Mkfile.old
-dkms.conf
+#不能忽略的文件
+!*.uvprojx
+!*.h
+!*.c
