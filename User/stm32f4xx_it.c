@@ -28,11 +28,29 @@
   */
 
 /* Includes ------------------------------------------------------------------*/
+//指纹模块
 #include "stm32f4xx_it.h"
 #include "./as608/bsp_as608.h"
 #include "./usart/rx_data_queue.h"
 #include "./led/bsp_led.h"
- 
+ //蓝牙
+#include "./systick/bsp_SysTick.h" 
+#include "./usart/bsp_blt_usart.h"
+#include "./usart/bsp_debug_usart.h"
+
+
+ //蓝牙SysTick延时 
+#define TASK_DELAY_NUM  2       //总任务个数，可以自己根据实际情况修改
+#define TASK_DELAY_0    500    //任务0延时 500*10 毫秒后执行：检查蓝牙是否已连接
+#define TASK_DELAY_1    50     //任务1延时 50*10 毫秒后执行：
+
+uint32_t Task_Delay_Group[TASK_DELAY_NUM];  //任务数组，用来计时、并判断是否执行对应任务
+
+/* 每5s检查蓝牙是否连接 */
+int hc05_inquery_connect;
+
+
+
 
 /** @addtogroup STM32F429I_DISCOVERY_Examples
   * @{
@@ -135,17 +153,46 @@ void PendSV_Handler(void)
 {}
 	
 	
-	/**
-  * @brief  This function handles SysTick Handler.
+/**
+  * @brief  蓝牙 handles SysTick Handler.
   * @param  None
   * @retval None
   */
 void SysTick_Handler(void)
-{}
+{
+  int i;
+  
+  for(i=0; i<TASK_DELAY_NUM; i++)
+  {
+    Task_Delay_Group[i] ++;                   //任务计时，时间到后执行
+  }
+  
+  
+  /* 处理任务0 */
+  if(Task_Delay_Group[0] >= TASK_DELAY_0)     //判断是否执行任务0
+  {
+    Task_Delay_Group[0] = 0;                  //置0重新计时
+    
+    /* 任务0：检查蓝牙是否已连接 */
+    
+    hc05_inquery_connect = 1; //如果蓝牙没有连接，标志位置1
+    
+  }
+  
+  /* 处理任务1 */
+  if(Task_Delay_Group[1] >= TASK_DELAY_1)     //判断是否执行任务1
+  {
+    Task_Delay_Group[1] = 0;                  //置0重新计时
+    
+    
+    /* 任务1：xxxxx */
+    //printf("Test\r\n");
+  }
+}
         
   
   /**
-  * @brief  TouchOut引脚EXTI中断
+  * @brief  指纹模块:TouchOut引脚EXTI中断
   * @param  None
   * @retval None
   */
@@ -153,6 +200,7 @@ void SysTick_Handler(void)
 void AS608_TouchOut_IRQHandler(void)
 {
   /*确保是否产生了EXTI Line中断*/
+	
 	if(EXTI_GetITStatus(AS608_TouchOut_INT_EXTI_LINE) != RESET) 
 	{
 		/*LED反转*/	
@@ -164,7 +212,7 @@ void AS608_TouchOut_IRQHandler(void)
 
 
   /**
-  * @brief  串口中断服务函数,把接收到的数据写入缓冲区，
+* @brief  指纹模块:串口中断服务函数,把接收到的数据写入缓冲区，
             在main函数中轮询缓冲区输出数据
   * @param  None
   * @retval None
@@ -202,6 +250,68 @@ void AS608_TouchOut_IRQHandler(void)
 
 	}
 }	
+
+
+
+//蓝牙模块:调试串口中断缓存串口数据
+ReceiveData DEBUG_USART_ReceiveData;
+
+// 串口中断服务函数
+void DEBUG_USART_IRQHandler(void)
+{
+		uint8_t ucCh; 
+    if(USART_GetITStatus(DEBUG_USART, USART_IT_RXNE) != RESET)
+    {
+      ucCh = USART_ReceiveData(DEBUG_USART);
+      if(DEBUG_USART_ReceiveData.datanum < UART_BUFF_SIZE)
+        {
+          if((ucCh != 0x0a) && (ucCh != 0x0d))
+          {
+            DEBUG_USART_ReceiveData.uart_buff[DEBUG_USART_ReceiveData.datanum] = ucCh;                 //不接收换行回车
+            DEBUG_USART_ReceiveData.datanum++;
+          }
+
+        }         
+     }
+		if(USART_GetITStatus( DEBUG_USART, USART_IT_IDLE ) == SET )                                         //数据帧接收完毕
+    {
+        DEBUG_USART_ReceiveData.receive_data_flag = 1;
+        USART_ReceiveData( DEBUG_USART );                                                              //由软件序列清除中断标志位(先读USART_SR，然后读USART_DR)	
+    }	
+} 
+
+
+//蓝牙模块:蓝牙串口中断缓存串口数据
+ReceiveData BLT_USART_ReceiveData;
+
+void BLT_USART_IRQHandler(void)
+{
+    uint8_t ucCh; 
+    if(USART_GetITStatus(BLT_USARTx, USART_IT_RXNE) != RESET)
+    {
+      ucCh = USART_ReceiveData(BLT_USARTx);
+      if(BLT_USART_ReceiveData.datanum < UART_BUFF_SIZE)
+      {
+        if((ucCh != 0x0a) && (ucCh != 0x0d))
+        {
+          BLT_USART_ReceiveData.uart_buff[BLT_USART_ReceiveData.datanum] = ucCh;                 //不接收换行回车
+          BLT_USART_ReceiveData.datanum++;
+        }
+      }
+    }
+		if(USART_GetITStatus( BLT_USARTx, USART_IT_IDLE ) == SET )                                         //数据帧接收完毕
+    {
+        BLT_USART_ReceiveData.receive_data_flag = 1;
+        USART_ReceiveData( BLT_USARTx );                                                              //由软件序列清除中断标志位(先读USART_SR，然后读USART_DR)	
+    }	
+
+}
+
+extern void TimingDelay_Decrement(void);
+void SysTick_DHT11_Handler(void)
+{
+  TimingDelay_Decrement();
+}
 
 /**
   * @}
