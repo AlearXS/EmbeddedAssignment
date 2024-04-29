@@ -801,6 +801,61 @@
               <FileType>1</FileType>
               <FilePath>..\..\User\systick\bsp_SysTick.c</FilePath>
             </File>
+            <File>
+              <FileName>bsp_beep.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\User\beep\bsp_beep.c</FilePath>
+            </File>
+            <File>
+              <FileName>core_delay.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\User\dwt_delay\core_delay.c</FilePath>
+            </File>
+            <File>
+              <FileName>fonts.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\User\font\fonts.c</FilePath>
+            </File>
+            <File>
+              <FileName>bsp_hc05.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\User\hc05\bsp_hc05.c</FilePath>
+            </File>
+            <File>
+              <FileName>i2c.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\User\i2c\i2c.c</FilePath>
+            </File>
+            <File>
+              <FileName>bsp_internalFlash.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\User\internalFlash\bsp_internalFlash.c</FilePath>
+            </File>
+            <File>
+              <FileName>bsp_key.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\User\key\bsp_key.c</FilePath>
+            </File>
+            <File>
+              <FileName>bsp_ili9806g_lcd.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\User\lcd\bsp_ili9806g_lcd.c</FilePath>
+            </File>
+            <File>
+              <FileName>bsp_nt35510_lcd.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\User\lcd\bsp_nt35510_lcd.c</FilePath>
+            </File>
+            <File>
+              <FileName>mpu6050.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\User\mpu6050\mpu6050.c</FilePath>
+            </File>
+            <File>
+              <FileName>bsp_blt_usart.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\User\usart\bsp_blt_usart.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
