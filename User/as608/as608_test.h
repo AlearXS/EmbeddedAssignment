@@ -16,5 +16,6 @@ void Clean_FR(void);
 
 void Show_Message(void);
 void FR_Task(void);
+int FR_unlocking(int *id);
   
 #endif /* __AS608_TEST_H */
