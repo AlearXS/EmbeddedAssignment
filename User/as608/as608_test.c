@@ -17,9 +17,12 @@
 
 #include "./as608/as608_test.h"
 #include "./as608/bsp_as608.h"
+#include "./effect/effect.h"
 
 extern uint8_t TouchOut_int_flag;
 
+
+uint32_t   Flag_in =0;
  /**
   * @brief  指令解析
   * @param  无
@@ -36,6 +39,27 @@ void Show_Message(void)
 }
 
 
+int FR_unlocking( int *id){
+	
+	uint32_t   i=3;// repeat times
+	
+  if(PS_Connect(&AS608_Addr))                      /*与AS608串口通信*/
+  { 
+    AS608_INFO("未检测到指纹模块，请检查连接！！！\r\n");			 
+		return 1;
+  }
+	while(i > 0 && Flag_in == 0){
+		*id = Compare_FR();
+		i--;
+		if(Flag_in == 1)
+			isRight();
+		else
+			isWrong();
+	}
+	
+	if (Flag_in == 1) return 0;
+	else return 1;
+}
 
 /**
   * @brief  指纹模块操作
@@ -45,11 +69,16 @@ void Show_Message(void)
 void  FR_Task(void)
 {	
   uint32_t   ch;
+
   scanf("%d",&ch);
 	
   AS608_INFO("接收到字符：%d\r\n",ch);
-  
-
+   if(PS_Connect(&AS608_Addr))                      /*与AS608串口通信*/
+  { 
+    AS608_INFO("未检测到指纹模块，请检查连接！！！\r\n");			  
+  }
+	
+	
 	
   switch(ch)
   {
@@ -270,7 +299,7 @@ void  Add_FR(void)
   * @param  无
   * @retval 无
   */
-void Compare_FR(void)  
+int Compare_FR(void)  
 {  
   uint16_t  ID=0;                    /*初始化ID值*/  
   uint16_t  sure;
@@ -288,6 +317,8 @@ void Compare_FR(void)
       if(sure==0x00)
       {
         AS608_INFO ("对比指纹成功，指纹ID：%d！！！\r\n\r\n",ID);
+				Flag_in = 1;
+				return ID;
       }
       else 
       {
@@ -303,7 +334,7 @@ void Compare_FR(void)
 	{
 	  ShowErrMessage(sure);
 	}
- 
+	return -1;
 }
 
 

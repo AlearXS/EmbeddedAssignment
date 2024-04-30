@@ -30,6 +30,7 @@
 #include "./mpu6050/mpu6050.h"
 #include "./as608/bsp_as608.h"
 #include "./as608/as608_test.h"
+#include "./beep/bsp_beep.h"
 
 
 
@@ -42,7 +43,7 @@ void Configure_all(void);
 void show_tip(void);
 
 // 临时函数声明
-int FR_unlocking(int *id){*id = 1; return 0;};
+//int FR_unlocking(int *id){*id = 1; return 0;};
 int blt_unlocking(int *id){*id = 1; return 0;};
 
 /**
@@ -90,7 +91,7 @@ int main(void)
     printf("本次火眼金睛的结果是：%d\r\n\r\n", res);
     Delay_ms(500);
   }while(res);
-  printf("登陆成功\r\n");
+  printf("登陆成功 ID: %d\r\n", id);
   //选择解锁方式
 
   //欢迎页
@@ -134,6 +135,8 @@ void Configure_all(void){
 
 	LED_GPIO_Config();
 	Key_GPIO_Config();
+	/*蜂鸣器端口初始化 */
+	BEEP_GPIO_Config(); 
 	
   // /* HC05蓝牙模块初始化：GPIO 和 USART3 配置模式为 38400 8-N-1 接收中断 */
 	// if(HC05_Init() == 0)
