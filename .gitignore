@@ -22,6 +22,7 @@ RTE/
 Templates/
 Examples/
 OBJ/
+Output/
 
 #不能忽略的文件
 !*.uvprojx
