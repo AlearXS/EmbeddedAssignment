@@ -54,7 +54,7 @@ int blt_unlocking(int *id){*id = 1; return 0;};
 int main(void)
 {
   Configure_all();
-
+  goto test;
   //串口输出提示语
   int x, id, user_id, res;
   do{
@@ -92,12 +92,34 @@ int main(void)
   printf("登陆成功 ID: %d\r\n", id);
   //选择解锁方式
 
+  #define PADDING_LEFT (2 * LCD_GetFont()->Width)
   //欢迎页
   //TODO: 改成lcd显示
-  printf("ID: %d\r\n", user_id);
+  test:
+  char buf[256];
+  sprintf(buf, "ID: %d", user_id);
+  puts(buf);
+  StringLine(PADDING_LEFT, 1, buf);
+
+  sprintf(buf, "User_name: Alear");
+  puts(buf);
+  StringLine(PADDING_LEFT, 2, buf);
+
+  sprintf(buf, "wet: ");
+  puts(buf);
+  StringLine(PADDING_LEFT, 3, buf);
+
+  sprintf(buf, "press key1 to enter TETRIS");
+  puts(buf);
+  StringLine(PADDING_LEFT, 4, buf);
+
+  sprintf(buf, "press key2 to enter PAINTING");
+  puts(buf);
+  StringLine(PADDING_LEFT, 5, buf);
+
   // TODO: 输出用户名
   // TODO: 输出温湿度
-  printf("按Key1进入俄罗斯方块，按key2进入画图程序");
+  puts("按Key1进入俄罗斯方块，按key2进入画图程序");
   // TODO
   while(1);
   
