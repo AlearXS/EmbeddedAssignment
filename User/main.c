@@ -33,6 +33,7 @@
 #include "./lcd/bsp_ili9806g_lcd.h"
 #include "FATFS/ff.h"
 #include "./flash/bsp_spi_flash.h"
+#include "./user/user.h"
 /**
   ******************************************************************************
   *                              定义变量
@@ -55,7 +56,6 @@ void Configure_all(void);
 void show_tip(void);
 
 // 临时函数声明
-int blt_unlocking(int *id){*id = 1; return 0;};
 
 
 /**
@@ -66,7 +66,7 @@ int blt_unlocking(int *id){*id = 1; return 0;};
 int main(void)
 {
   Configure_all();
-  goto test;
+  Register(0, "Alear", "123456");
   //串口输出提示语
   int x, id, user_id, res;
   do{
@@ -107,7 +107,6 @@ int main(void)
   #define PADDING_LEFT (2 * LCD_GetFont()->Width)
   //欢迎页
   //TODO: 改成lcd显示
-  test:
   char buf[256];
   sprintf(buf, "ID: %d", user_id);
   puts(buf);

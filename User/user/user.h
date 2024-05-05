@@ -2,6 +2,8 @@
 #define USER_H
 
 
+#include "FATFS/ff.h"
+#include "./flash/bsp_spi_flash.h"
 //最大用户数量
 #define MAX_USERS 256
 //用户名、密码字段最大长度
