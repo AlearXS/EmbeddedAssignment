@@ -245,7 +245,7 @@ void ILI9806G_DisplayStringEx_YDir(uint16_t x, 		//×Ö·ûÏÔÊ¾Î»ÖÃx
 
 #define StringLine(LINE_STARTX, LINE_NUM, STR) do{\
 	LCD_ClearLine(LINE(LINE_NUM));					\
-	ILI9806G_DispString_EN(LINE(LINE_NUM), STR); \
+	ILI9806G_DispString_EN(LINE_STARTX, LINE(LINE_NUM), STR); \
 }while(0);
 
 #define CLS ILI9806G_Clear(0,0,LCD_X_LENGTH,LCD_Y_LENGTH);
