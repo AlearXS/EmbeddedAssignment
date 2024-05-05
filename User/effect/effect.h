@@ -2,8 +2,8 @@
 #define	__EFFECT_H
 
 
-void isRight();
-void isWrong();
+void isRight(void);
+void isWrong(void);
 
 
 #endif
