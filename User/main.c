@@ -86,13 +86,21 @@ int main(void)
       res = blt_unlocking(&id);
       break;
     case 3:
-      // TODO：注册
-      res = 3;
-      printf("注册功能还在开发中");
+      res = FR_Register();
+      res = 1;
       break;
     case 4:
-      // TODO: 管理
-      // break;
+      res = FR_Delete();
+      res = 1;
+      break;
+    case 5:
+      puts("输出用户表");
+      for(int i=0;i<MAX_USERS;i++){
+        if(users[i].status == USER_STATUS_REGISTERED)
+          printf("%d %s %s\r\n", users[i].id, users[i].username, users[i].password);
+      }
+			res = 1;
+      break;
     default:
       printf("未知的魔法，你到底是什么人？");
       res = 2;

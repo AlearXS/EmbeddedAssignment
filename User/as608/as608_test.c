@@ -18,6 +18,7 @@
 #include "./as608/as608_test.h"
 #include "./as608/bsp_as608.h"
 #include "./effect/effect.h"
+#include "./user/user.h"
 
 extern uint8_t TouchOut_int_flag;
 
@@ -61,6 +62,31 @@ int FR_unlocking( int *id){
 	else return 1;
 }
 
+
+int FR_Register(){
+	 if(PS_Connect(&AS608_Addr))                      /*与AS608串口通信*/
+  { 
+    AS608_INFO("未检测到指纹模块，请检查连接！！！\r\n");			 
+		return 1;
+  }
+	else {
+	Add_FR();
+	return 0;
+	}
+}
+
+int FR_Delete(){
+	 if(PS_Connect(&AS608_Addr))                      /*与AS608串口通信*/
+  { 
+    AS608_INFO("未检测到指纹模块，请检查连接！！！\r\n");			 
+		return 1;
+  }
+	else {
+	Del_FR();
+	return 0;
+	}
+
+}
 /**
   * @brief  指纹模块操作
   * @param  无
@@ -142,7 +168,8 @@ void  Connect_Test(void)
 void  Add_FR(void)
 {
   uint16_t  i,j,sure,ID;
- 
+	char username[20] ;
+	char psw[20] ;
   i=j=0;
 	
   while(1)
@@ -268,7 +295,13 @@ void  Add_FR(void)
          }while(!(ID<PS_MAXNUM));
         
          sure=PS_StoreChar(CHAR_BUFFER2,ID);  /*储存模板*/
-         if(sure==0x00) 	
+				 
+				 AS608_INFO("请输入用户名username");
+				 scanf("%s", username);
+				 AS608_INFO("请输入密码password");
+				 scanf("%s", psw);
+				 
+         if(sure==0x00 && Register(ID,username,psw)==0)  	
          {
            AS608_INFO("录入指纹模块成功！！！\r\n\r\n");
       
@@ -380,7 +413,7 @@ void Del_FR(void)
 		AS608_INFO ("******命令：请输入存储ID，范围为0—239******\r\n");
 		ID=GET_NUM();
 	}while(!(ID<PS_MAXNUM));         /*输入ID不能超过指纹模块最大容量*/
-	
+	delete_user(ID);
 	sure=PS_DeletChar(ID,1);         /*删除指定用户的指纹模板*/
 	
 	if(sure == 0x00)                
