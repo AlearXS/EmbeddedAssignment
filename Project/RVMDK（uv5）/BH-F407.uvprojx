@@ -866,6 +866,11 @@
               <FileType>1</FileType>
               <FilePath>..\..\User\user\user.c</FilePath>
             </File>
+            <File>
+              <FileName>blt_unlocking.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\User\blt\blt_unlocking.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>

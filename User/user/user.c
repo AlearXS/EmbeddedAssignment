@@ -1,6 +1,4 @@
 #include "stm32f4xx.h"
-#include "FATFS/ff.h"
-#include "./flash/bsp_spi_flash.h"
 #include "user.h"
 #include <stdlib.h>
 #include <string.h>
