@@ -113,15 +113,6 @@ void Configure_all(void){
 
 	/* 延时函数初始化 */
   CPU_TS_TmrInit();
-
-  /* LCD初始化 */
-  #ifdef ENABLE_LCD_DISPLAY
-	NT35510_Init();	
-	NT35510_GramScan( 6 );
-	LCD_SetFont(&Font16x32);
-	LCD_SetColors(RED,BLACK);
-  NT35510_Clear(0,0,LCD_X_LENGTH,LCD_Y_LENGTH);	/* 清屏，显示全黑 */
-  #endif
 	
   /* 调试串口初始化 USART1 配置模式为 115200 8-N-1 接收中断 */
 	Debug_USART_Config();
@@ -157,10 +148,6 @@ void Configure_all(void){
 	else
 	{
 		HC05_ERROR("HC05模块检测不正常，请检查模块与开发板的连接，然后复位开发板重新测试。");
-		#ifdef ENABLE_LCD_DISPLAY
-		NT35510_DispString_EN ( 20, 60, "No HC05 module detected!"  );
-		NT35510_DispString_EN ( 5, 100, "Please check the hardware connection and reset the system." );
-    #endif
     
 		while(1);
 	}
@@ -196,10 +183,6 @@ void Configure_all(void){
 	HC05_Send_CMD(hc05_nameCMD,1);
 
 	HC05_INFO("本模块名字为:%s ,模块已准备就绪。",hc05_name);
-	#ifdef ENABLE_LCD_DISPLAY
-	NT35510_DispStringLine_EN ( (LINE(4)), "ReceiveData USART1" );	
-  NT35510_DispStringLine_EN ( (LINE(12)), "ReceiveData HC-05" );
-  #endif
   
   
   
