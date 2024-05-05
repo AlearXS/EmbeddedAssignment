@@ -19,9 +19,6 @@
 #include "./usart/bsp_blt_usart.h"
 #include <string.h>
 #include <stdio.h>
-#include "./lcd/bsp_nt35510_lcd.h"
-
-
 
 BLTDev bltDevList; //蓝牙设备列表，用于保存蓝牙设备数据
 
