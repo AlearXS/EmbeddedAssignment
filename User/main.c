@@ -22,7 +22,6 @@
 #include "./systick/bsp_SysTick.h"
 #include "./hc05/bsp_hc05.h"
 #include "./key/bsp_key.h" 
-#include "./lcd/bsp_nt35510_lcd.h"
 #include <string.h>
 #include <stdlib.h>
 #include "./dwt_delay/core_delay.h"   
@@ -31,6 +30,7 @@
 #include "./as608/bsp_as608.h"
 #include "./as608/as608_test.h"
 #include "./beep/bsp_beep.h"
+#include "./lcd/bsp_ili9806g_lcd.h"
 
 
 
@@ -43,8 +43,8 @@ void Configure_all(void);
 void show_tip(void);
 
 // 临时函数声明
-//int FR_unlocking(int *id){*id = 1; return 0;};
 int blt_unlocking(int *id){*id = 1; return 0;};
+
 
 /**
   * @brief  主函数
@@ -54,9 +54,7 @@ int blt_unlocking(int *id){*id = 1; return 0;};
 int main(void)
 {
   Configure_all();
-  
-    Delay_ms(100);
-  
+
   //串口输出提示语
   int x, id, user_id, res;
   do{
@@ -113,11 +111,6 @@ int main(void)
   */
 void Configure_all(void){
 
-  /* 蓝牙部分初始化 */
-  char hc05_name[30]="HC05_SLAVE";
-	char hc05_nameCMD[40];
-  
-  unsigned char mpu_reg = 0; //保存读取MPU6050寄存器的值
 	/* 延时函数初始化 */
   CPU_TS_TmrInit();
 
@@ -135,75 +128,90 @@ void Configure_all(void){
 
 	LED_GPIO_Config();
 	Key_GPIO_Config();
+
 	/*蜂鸣器端口初始化 */
 	BEEP_GPIO_Config(); 
 	
-  // /* HC05蓝牙模块初始化：GPIO 和 USART3 配置模式为 38400 8-N-1 接收中断 */
-	// if(HC05_Init() == 0)
-	// {
-	// 	HC05_INFO("HC05模块检测正常。");
-	// 	#ifdef ENABLE_LCD_DISPLAY
-	// 	NT35510_DispString_EN ( 40, 60, "HC05 module detected!" );
-  //   	#endif
-	// }
-	// else
-	// {
-	// 	HC05_ERROR("HC05模块检测不正常，请检查模块与开发板的连接，然后复位开发板重新测试。");
-	// 	#ifdef ENABLE_LCD_DISPLAY
-	// 	NT35510_DispString_EN ( 20, 60, "No HC05 module detected!"  );
-	// 	NT35510_DispString_EN ( 5, 100, "Please check the hardware connection and reset the system." );
-  //   #endif
+  ILI9806G_Init ();         //LCD 初始化
+  
+	//其中0、3、5、6 模式适合从左至右显示文字，
+  //不推荐使用其它模式显示文字	其它模式显示文字会有镜像效果			
+  //其中 6 模式为大部分液晶例程的默认显示方向  
+  ILI9806G_GramScan ( 6 );
+	
+
+  
+  /* 蓝牙部分初始化 */
+  char hc05_name[30]="HC05_SLAVE";
+	char hc05_nameCMD[40];
+  
+  unsigned char mpu_reg = 0; //保存读取MPU6050寄存器的值
+  /* HC05蓝牙模块初始化：GPIO 和 USART3 配置模式为 38400 8-N-1 接收中断 */
+	if(HC05_Init() == 0)
+	{
+		HC05_INFO("HC05模块检测正常。");
+		#ifdef ENABLE_LCD_DISPLAY
+		NT35510_DispString_EN ( 40, 60, "HC05 module detected!" );
+    	#endif
+	}
+	else
+	{
+		HC05_ERROR("HC05模块检测不正常，请检查模块与开发板的连接，然后复位开发板重新测试。");
+		#ifdef ENABLE_LCD_DISPLAY
+		NT35510_DispString_EN ( 20, 60, "No HC05 module detected!"  );
+		NT35510_DispString_EN ( 5, 100, "Please check the hardware connection and reset the system." );
+    #endif
     
-	// 	while(1);
-	// }
+		while(1);
+	}
   
-	// /*复位、恢复默认状态*/
-	// HC05_Send_CMD("AT+RESET\r\n",1);	//复位指令发送完成之后，需要一定时间HC05才会接受下一条指令
-	// HC05_Send_CMD("AT+ORGL\r\n",1);
+	/*复位、恢复默认状态*/
+	HC05_Send_CMD("AT+RESET\r\n",1);	//复位指令发送完成之后，需要一定时间HC05才会接受下一条指令
+	HC05_Send_CMD("AT+ORGL\r\n",1);
 
 	
-	// /*各种命令测试演示，默认不显示。
-	//  *在bsp_hc05.h文件把HC05_DEBUG_ON 宏设置为1，
-	//  *即可通过串口调试助手接收调试信息*/	
+	/*各种命令测试演示，默认不显示。
+	 *在bsp_hc05.h文件把HC05_DEBUG_ON 宏设置为1，
+	 *即可通过串口调试助手接收调试信息*/	
 	
-	// HC05_Send_CMD("AT+VERSION?\r\n",1);
+	HC05_Send_CMD("AT+VERSION?\r\n",1);
 	
-	// HC05_Send_CMD("AT+ADDR?\r\n",1);
+	HC05_Send_CMD("AT+ADDR?\r\n",1);
 	
-	// HC05_Send_CMD("AT+UART?\r\n",1);
+	HC05_Send_CMD("AT+UART?\r\n",1);
 	
-	// HC05_Send_CMD("AT+CMODE?\r\n",1);
+	HC05_Send_CMD("AT+CMODE?\r\n",1);
 	
-	// HC05_Send_CMD("AT+STATE?\r\n",1);	
+	HC05_Send_CMD("AT+STATE?\r\n",1);	
 
-	// HC05_Send_CMD("AT+ROLE=0\r\n",1);
+	HC05_Send_CMD("AT+ROLE=0\r\n",1);
 	
-	// /*初始化SPP规范*/
-	// HC05_Send_CMD("AT+INIT\r\n",1);
-	// HC05_Send_CMD("AT+CLASS=0\r\n",1);
-	// HC05_Send_CMD("AT+INQM=1,9,48\r\n",1);
+	/*初始化SPP规范*/
+	HC05_Send_CMD("AT+INIT\r\n",1);
+	HC05_Send_CMD("AT+CLASS=0\r\n",1);
+	HC05_Send_CMD("AT+INQM=1,9,48\r\n",1);
 	
-	// /*设置模块名字*/
-	// sprintf(hc05_nameCMD,"AT+NAME=%s\r\n",hc05_name);
-	// HC05_Send_CMD(hc05_nameCMD,1);
+	/*设置模块名字*/
+	sprintf(hc05_nameCMD,"AT+NAME=%s\r\n",hc05_name);
+	HC05_Send_CMD(hc05_nameCMD,1);
 
-	// HC05_INFO("本模块名字为:%s ,模块已准备就绪。",hc05_name);
-	// #ifdef ENABLE_LCD_DISPLAY
-	// NT35510_DispStringLine_EN ( (LINE(4)), "ReceiveData USART1" );	
-  // NT35510_DispStringLine_EN ( (LINE(12)), "ReceiveData HC-05" );
-  // #endif
+	HC05_INFO("本模块名字为:%s ,模块已准备就绪。",hc05_name);
+	#ifdef ENABLE_LCD_DISPLAY
+	NT35510_DispStringLine_EN ( (LINE(4)), "ReceiveData USART1" );	
+  NT35510_DispStringLine_EN ( (LINE(12)), "ReceiveData HC-05" );
+  #endif
   
   
   
-  // /* 这部分是额外的代码
-  //    目的是为了防止板载 MPU6050 的INT引脚干扰STM32 PF10引脚的电平变化
-  //    使用霸天虎开发板这部分不可去掉，否则影响HC05的连接状态的检测
-  // */
-	// I2cMaster_Init(); //初始化 I2C
-	// if( ! MPU6050ReadID() ) {printf("无法读取MPU6050\r\n"); while(1);}
-  // MPU6050_WriteReg(MPU6050_RA_INT_PIN_CFG, (mpu_reg |((1<<MPU6050_INTCFG_INT_LEVEL_BIT) | 
-  //                                                     (1<<MPU6050_INTCFG_INT_OPEN_BIT) | 
-  //                                                     (1<<MPU6050_INTCFG_LATCH_INT_EN_BIT)) ) );
+  /* 这部分是额外的代码
+     目的是为了防止板载 MPU6050 的INT引脚干扰STM32 PF10引脚的电平变化
+     使用霸天虎开发板这部分不可去掉，否则影响HC05的连接状态的检测
+  */
+	I2cMaster_Init(); //初始化 I2C
+	if( ! MPU6050ReadID() ) {printf("无法读取MPU6050\r\n"); while(1);}
+  MPU6050_WriteReg(MPU6050_RA_INT_PIN_CFG, (mpu_reg |((1<<MPU6050_INTCFG_INT_LEVEL_BIT) | 
+                                                      (1<<MPU6050_INTCFG_INT_OPEN_BIT) | 
+                                                      (1<<MPU6050_INTCFG_LATCH_INT_EN_BIT)) ) );
   
   
   /* SysTick 10ms中断初始化 */

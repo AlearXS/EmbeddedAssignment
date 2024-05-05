@@ -62,10 +62,10 @@
 //#define  AS608_USART_IRQHandler         USART2_IRQHandler
 
 /*TouchOut���Ŷ���*/
-#define AS608_TouchOut_INT_GPIO_PORT                GPIOD
-#define AS608_TouchOut_INT_GPIO_CLK                 RCC_AHB1Periph_GPIOB
+#define AS608_TouchOut_INT_GPIO_PORT                GPIOA
+#define AS608_TouchOut_INT_GPIO_CLK                 RCC_AHB1Periph_GPIOA
 #define AS608_TouchOut_INT_GPIO_PIN                 GPIO_Pin_8
-#define AS608_TouchOut_INT_EXTI_PORTSOURCE          EXTI_PortSourceGPIOB
+#define AS608_TouchOut_INT_EXTI_PORTSOURCE          EXTI_PortSourceGPIOA
 #define AS608_TouchOut_INT_EXTI_PINSOURCE           EXTI_PinSource8
 #define AS608_TouchOut_INT_EXTI_LINE                EXTI_Line8
 #define AS608_TouchOut_INT_EXTI_IRQ                 EXTI9_5_IRQn
