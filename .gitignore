@@ -19,7 +19,6 @@
 
 #忽略.gitignore根目录下的文件夹，根据自己的需要修改
 RTE/
-Templates/
 Examples/
 OBJ/
 Output/
