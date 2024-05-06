@@ -187,7 +187,6 @@ int main(void)
   * @retval 无
   */
 void Configure_all(void){
-
 	/* 延时函数初始化 */
   CPU_TS_TmrInit();
 	
