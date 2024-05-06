@@ -28,6 +28,7 @@ int write_user_table(){
 			return 1;
 		}
 	}
+	f_close(&file);
 	user_table_loaded = 1;
 	return 0;
 }

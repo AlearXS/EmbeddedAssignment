@@ -20,6 +20,8 @@ struct user_item{
 };
 extern FATFS fs;
 extern struct user_item users[MAX_USERS];
+int load_user_table();
+int write_user_table();
 int check(int id, char *password);
 int Register(int id, char* username, char* password);
 int delete_user(int id);

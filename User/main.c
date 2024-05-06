@@ -34,6 +34,9 @@
 #include "FATFS/ff.h"
 #include "./flash/bsp_spi_flash.h"
 #include "./user/user.h"
+
+
+#define PADDING_LEFT (2 * LCD_GetFont()->Width)
 /**
   ******************************************************************************
   *                              定义变量
@@ -47,6 +50,7 @@ BYTE ReadBuffer[1024]={0};        /* 读缓冲区 */
 BYTE WriteBuffer[] =              /* 写缓冲区*/
 "欢迎使用野火STM32 F429开发板 今天是个好日子，新建文件系统测试文件\r\n";  
 
+//外部变量
 extern ReceiveData DEBUG_USART_ReceiveData;
 extern ReceiveData BLT_USART_ReceiveData;
 extern int hc05_inquery_connect;
@@ -54,9 +58,13 @@ extern int hc05_inquery_connect;
 //函数声明
 void Configure_all(void);
 void show_tip(void);
+void ask(int pre, int x);
 
 // 临时函数声明
 
+// 全局变量
+#define BUFF_SIZE 256
+char buf[BUFF_SIZE];
 
 /**
   * @brief  主函数
@@ -66,17 +74,35 @@ void show_tip(void);
 int main(void)
 {
   Configure_all();
-  Register(0, "Alear", "123456");
+  // Register(0, "Alear", "123456");
   //串口输出提示语
-  int x, id, user_id, res;
+  int x = 1, id, user_id, res, pre = 0;
+  CLS;
+  StringLine(PADDING_LEFT, 0, "Hello World!");
+  StringLine(PADDING_LEFT, (1), "1: Fingerprint Recognition");
+  StringLine(PADDING_LEFT, (2), "2: Bluetooth");
+  StringLine(PADDING_LEFT, (3), "3: Register");
+  StringLine(PADDING_LEFT, (4), "4: Delete user");
+  StringLine(PADDING_LEFT, (5), "5: Show user table");
+  StringLine(PADDING_LEFT, (6), "Press key1 to select the next item.");
+  StringLine(PADDING_LEFT, (8), "press key2 to confirm.");
+
   do{
     // int x, id, res;
     show_tip();
     // while(~scanf("%d", &x))printf("test %d\r\n", x);
-    scanf("%d", &x);
-    // while(1){
-    // }
-    // printf("test\r\n");
+    // x = 1;
+    while(Key_Scan(KEY2_GPIO_PORT, KEY2_PIN) == KEY_OFF){
+      if(x != pre)
+        ask(pre, x), pre = x;
+      if(Key_Scan(KEY1_GPIO_PORT, KEY1_PIN) == KEY_ON){
+        x++;
+        if(x > 5)
+          x = 1;
+      }
+    }
+    
+    // scanf("%d", &x);
     switch (x)
     {
     case 1:
@@ -95,6 +121,7 @@ int main(void)
       break;
     case 5:
       puts("输出用户表");
+      load_user_table();
       for(int i=0;i<MAX_USERS;i++){
         if(users[i].status == USER_STATUS_REGISTERED)
           printf("%d %s %s\r\n", users[i].id, users[i].username, users[i].password);
@@ -110,37 +137,40 @@ int main(void)
     Delay_ms(500);
   }while(res);
   printf("登陆成功 ID: %d\r\n", id);
-  //选择解锁方式
 
-  #define PADDING_LEFT (2 * LCD_GetFont()->Width)
-  //欢迎页
-  //TODO: 改成lcd显示
-  char buf[256];
-  sprintf(buf, "ID: %d", user_id);
-  puts(buf);
-  StringLine(PADDING_LEFT, 1, buf);
+  while(1){
+    //欢迎页
+    
+    sprintf(buf, "ID: %d", user_id);
+    puts(buf);
+    StringLine(PADDING_LEFT, 1, buf);
 
-  sprintf(buf, "User_name: Alear");
-  puts(buf);
-  StringLine(PADDING_LEFT, 2, buf);
+    sprintf(buf, "User_name: %s", users[id].username);
+    puts(buf);
+    StringLine(PADDING_LEFT, 2, buf);
 
-  sprintf(buf, "wet: ");
-  puts(buf);
-  StringLine(PADDING_LEFT, 3, buf);
+    sprintf(buf, "wet: ");
+    puts(buf);
+    StringLine(PADDING_LEFT, 3, buf);
 
-  sprintf(buf, "press key1 to enter TETRIS");
-  puts(buf);
-  StringLine(PADDING_LEFT, 4, buf);
+    sprintf(buf, "press key1 to enter TETRIS");
+    puts(buf);
+    StringLine(PADDING_LEFT, 4, buf);
 
-  sprintf(buf, "press key2 to enter PAINTING");
-  puts(buf);
-  StringLine(PADDING_LEFT, 5, buf);
+    sprintf(buf, "press key2 to enter PAINTING");
+    puts(buf);
+    StringLine(PADDING_LEFT, 5, buf);
+    puts("按Key1进入俄罗斯方块，按key2进入画图程序");
 
-  // TODO: 输出用户名
-  // TODO: 输出温湿度
-  puts("按Key1进入俄罗斯方块，按key2进入画图程序");
-  // TODO
-  while(1);
+    while(1){
+      if(Key_Scan(KEY1_GPIO_PORT, KEY1_PIN)){
+        // TETRIS(id);
+      }
+      if(Key_Scan(KEY2_GPIO_PORT, KEY2_PIN)){
+
+      }
+    }
+  }
   
 }
 
@@ -365,6 +395,10 @@ void show_tip(void){
   printf("记得输出回车\r\n");
  }
 
+void ask(int pre, int x){
+  ILI9806G_DispChar_EN(0, LINE(pre), ' ');
+  ILI9806G_DispChar_EN(0, LINE(x), '>');
+}
 
 /*********************************************END OF FILE**********************/
 
