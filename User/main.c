@@ -34,6 +34,7 @@
 #include "FATFS/ff.h"
 #include "./flash/bsp_spi_flash.h"
 #include "./user/user.h"
+#include "DHT11/bsp_dht11.h"
 
 
 #define PADDING_LEFT (2 * LCD_GetFont()->Width)
@@ -74,11 +75,12 @@ char buf[BUFF_SIZE];
 int main(void)
 {
   Configure_all();
+  start:
   // Register(0, "Alear", "123456");
   //串口输出提示语
-  int x = 1, id, user_id, res, pre = 0;
+  int x = 1, id, user_id, res = 1, pre = 0;
   CLS;
-  StringLine(PADDING_LEFT, 0, "Hello World!");
+  StringLine(PADDING_LEFT, 0, "Login Method!");
   StringLine(PADDING_LEFT, (1), "1: Fingerprint Recognition");
   StringLine(PADDING_LEFT, (2), "2: Bluetooth");
   StringLine(PADDING_LEFT, (3), "3: Register");
@@ -90,8 +92,10 @@ int main(void)
   do{
     // int x, id, res;
     show_tip();
+
     // while(~scanf("%d", &x))printf("test %d\r\n", x);
     // x = 1;
+    ILI9806G_DispChar_EN(0, LINE(x), '>');
     while(Key_Scan(KEY2_GPIO_PORT, KEY2_PIN) == KEY_OFF){
       if(x != pre)
         ask(pre, x), pre = x;
@@ -101,6 +105,7 @@ int main(void)
           x = 1;
       }
     }
+    ILI9806G_DispChar_EN(0, LINE(x), 'X');
     
     // scanf("%d", &x);
     switch (x)
@@ -129,18 +134,19 @@ int main(void)
 			res = 1;
       break;
     default:
-      printf("未知的魔法，你到底是什么人？");
+      printf("未知命令");
       res = 2;
       break;
     }
-    printf("本次火眼金睛的结果是：%d\r\n\r\n", res);
+    printf("本轮测试的结果是：%d\r\n\r\n", res);
     Delay_ms(500);
   }while(res);
   printf("登陆成功 ID: %d\r\n", id);
+  load_user_table();
 
   while(1){
     //欢迎页
-    
+    CLS;
     sprintf(buf, "ID: %d", user_id);
     puts(buf);
     StringLine(PADDING_LEFT, 1, buf);
@@ -149,7 +155,7 @@ int main(void)
     puts(buf);
     StringLine(PADDING_LEFT, 2, buf);
 
-    sprintf(buf, "wet: ");
+    sprintf(buf, WET_AND_TEMP);
     puts(buf);
     StringLine(PADDING_LEFT, 3, buf);
 
@@ -157,17 +163,17 @@ int main(void)
     puts(buf);
     StringLine(PADDING_LEFT, 4, buf);
 
-    sprintf(buf, "press key2 to enter PAINTING");
+    sprintf(buf, "press key2 to enter EXIT");
     puts(buf);
     StringLine(PADDING_LEFT, 5, buf);
-    puts("按Key1进入俄罗斯方块，按key2进入画图程序");
+    puts("按Key1进入俄罗斯方块，按key2进入退出");
 
     while(1){
       if(Key_Scan(KEY1_GPIO_PORT, KEY1_PIN)){
         // TETRIS(id);
       }
       if(Key_Scan(KEY2_GPIO_PORT, KEY2_PIN)){
-
+          goto start;
       }
     }
   }
@@ -377,6 +383,7 @@ void Configure_all(void){
 	}
 	/* 不再读写，关闭文件 */
 	f_close(&fnew);	
+  // load_user_table();
   /*end of 初始化文件系统*/
 }
 
@@ -386,12 +393,20 @@ void Configure_all(void){
   * @retval 无
   */
 void show_tip(void){
-  printf("欢迎参加这场盛大的开演\r\n");
-  printf("请选择你的进入方式：\r\n");
-  printf("1: 鲜红的手指见证永恒的忠诚\r\n");
-  printf("2: 蓝色的心灵在无限的远方中共鸣\r\n");
-  printf("3: 恶魔的契约贱卖你的灵魂\r\n");
-  printf("3: 小猫咪看不得这个\r\n");
+  // printf("欢迎参加这场盛大的开演\r\n");
+  // printf("请选择你的进入方式：\r\n");
+  // printf("1: 鲜红的手指见证永恒的忠诚\r\n");
+  // printf("2: 蓝色的心灵在无限的远方中共鸣\r\n");
+  // printf("3: 恶魔的契约贱卖你的灵魂\r\n");
+  // printf("3: 小猫咪看不得这个\r\n");
+  // printf("记得输出回车\r\n");
+  // printf("欢迎参加这场盛大的开演\r\n");
+  printf("请选择登录方式：\r\n");
+  printf("1: 指纹识别\r\n");
+  printf("2: 蓝牙解锁\r\n");
+  printf("3: 注册\r\n");
+  printf("4: 删除用户\r\n");
+  printf("5: 输出用户表\r\n");
   printf("记得输出回车\r\n");
  }
 

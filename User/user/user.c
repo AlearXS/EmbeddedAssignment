@@ -18,7 +18,7 @@ int write_user_table(){
 	FRESULT res;
 	FIL file;
 	UINT bytes_written, bytes_read;
-	res = f_open(&file, "user_table.bin", FA_CREATE_ALWAYS | FA_WRITE);
+	res = f_open(&file, "1:user_table.bin", FA_CREATE_ALWAYS | FA_WRITE);
 	if(res == FR_OK){
 		res = f_write(&file, users, sizeof(users), &bytes_written);
 
@@ -44,7 +44,7 @@ int load_user_table(){
 		FRESULT res;
 		FIL file;
 		UINT bytes_written, bytes_read;
-		res = f_open(&file, "user_table.bin", FA_READ);
+		res = f_open(&file, "1:user_table.bin", FA_READ);
 		if(res == FR_OK){
 			res = f_read(&file, users, sizeof(users), &bytes_read);
 			if (res != FR_OK) {

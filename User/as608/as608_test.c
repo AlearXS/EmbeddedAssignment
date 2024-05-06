@@ -43,7 +43,7 @@ void Show_Message(void)
 int FR_unlocking( int *id){
 	
 	uint32_t   i=3;// repeat times
-	
+	Flag_in = 0;
   if(PS_Connect(&AS608_Addr))                      /*与AS608串口通信*/
   { 
     AS608_INFO("未检测到指纹模块，请检查连接！！！\r\n");			 
@@ -76,15 +76,15 @@ int FR_Register(){
 }
 
 int FR_Delete(){
-	 if(PS_Connect(&AS608_Addr))                      /*与AS608串口通信*/
-  { 
-    AS608_INFO("未检测到指纹模块，请检查连接！！！\r\n");			 
-		return 1;
-  }
-	else {
+	//  if(PS_Connect(&AS608_Addr))                      /*与AS608串口通信*/
+  // { 
+  //   AS608_INFO("未检测到指纹模块，请检查连接！！！\r\n");			 
+	// 	return 1;
+  // }
+	// else {
 	Del_FR();
 	return 0;
-	}
+	// }
 
 }
 /**
